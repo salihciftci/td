@@ -1,0 +1,120 @@
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"log"
+	"os"
+	"strconv"
+)
+
+var tds []string
+
+func add(arg []string) {
+	read()
+	name := ""
+	for i, e := range arg {
+		if i == 0 {
+			name = e
+		} else {
+			name = name + " " + e
+		}
+	}
+	tds = append(tds, name)
+	write(tds)
+}
+
+func list() {
+	read()
+	for i, e := range tds {
+		fmt.Printf("%d: %s\n", i+1, e)
+	}
+}
+
+func reset() {
+	tds = tds[:0]
+	write(tds)
+}
+
+func write(tds []string) {
+	file, err := os.Create(os.Getenv("HOME") + "/.tddb")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	w := bufio.NewWriter(file)
+	for _, line := range tds {
+		fmt.Fprintln(w, line)
+	}
+	w.Flush()
+}
+
+func done(which string) {
+	read()
+	if i, err := strconv.Atoi(which); err == nil {
+		if i-1 < len(tds) {
+			tds = append(tds[:i-1], tds[i:]...)
+		}
+	}
+	write(tds)
+}
+
+func read() {
+	tds = tds[:0]
+	file, err := os.Open(os.Getenv("HOME") + "/.tddb")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		tds = append(tds, scanner.Text())
+	}
+}
+
+func help() {
+	fmt.Println("td is a tool for managing tasks.")
+	fmt.Println("")
+	fmt.Println("Usage:")
+	fmt.Println("")
+	fmt.Println("\t td command [arguments]")
+	fmt.Println("")
+	fmt.Println("The Commands are:")
+	fmt.Println("")
+	fmt.Println("\tadd\tadd a new task.")
+	fmt.Println("\tlist\tlist all of your tasks.")
+	fmt.Println("\tdone\tcomplete your task.")
+	fmt.Println("\treset\tcomplete all of your tasks.")
+	fmt.Println("")
+}
+
+func main() {
+	if _, err := os.Stat(os.Getenv("HOME") + "/.tddb"); os.IsNotExist(err) {
+		write(tds)
+	}
+
+	arg := os.Args[1:]
+	if len(arg) < 1 || arg[0] == "help" || arg[0] == "h" {
+		help()
+	} else if arg[0] == "add" || arg[0] == "a" {
+		if len(arg) < 2 {
+			help()
+		} else {
+			add(arg[1:])
+		}
+	} else if arg[0] == "list" || arg[0] == "l" {
+		list()
+	} else if arg[0] == "reset" || arg[0] == "r" {
+		reset()
+	} else if arg[0] == "done" || arg[0] == "d" {
+		if len(arg) < 2 {
+			help()
+		} else {
+			done(arg[1])
+		}
+	} else {
+		help()
+	}
+}
