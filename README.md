@@ -1,6 +1,7 @@
 # td
 
 `td` is a tool for managing tasks. It's easy to use and not complicated. Written with Golang.
+[![Build Status](https://travis-ci.org/salihciftci/td.svg?branch=master)](https://travis-ci.org/salihciftci/td)
 
 ## Using td
 
