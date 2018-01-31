@@ -1,0 +1,11 @@
+language: go
+
+branches:
+        only:
+                - "master"
+
+go:
+        - 1.9
+        - 1.8
+env:
+        - GOOS=darwin
