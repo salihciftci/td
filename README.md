@@ -8,20 +8,20 @@ Using td is easy, not complicated and quick.
 
 ### Add a task
 
-To add a task, use `td add [desc]` or `td a [desc]`.
+To add a task, use `td [desc]`.
 
 ```
-$ td add Try to learn Golang.
-$ td add Go to school.
-$ td a Call Salih.
+$ td Try to learn Golang.
+$ td Go to school.
+$ td Call Salih.
 ```
 
 ### Listing Tasks
 
-For Listing your task just use `td list` or `td l`.
+For Listing your task just type `td`.
 
 ```
-$ td list
+$ td
 1: Try to learn Golang.
 2: Go to school.
 3: Call Salih.
@@ -29,11 +29,11 @@ $ td list
 
 ### Completing a task
 
-You can complete your task with `td done index` or `td d index`.
+You can complete your task with `td done index`.
 
 ```
 $ td done 2
-$ td l
+$ td
 1: Try to learn Golang.
 2: Call Salih.
 ```
@@ -43,7 +43,7 @@ $ td l
 You can even search a task with little trick.
 
 ```
-$ td l | grep Call
+$ td | grep Call
 2: Call Salih.
 ```
 
@@ -51,11 +51,11 @@ $ td l | grep Call
 
 Even you can complete all of your tasks. Just use `td reset`
 ```
-$ td l
+$ td
 1: Try to learn Golang.
 2: Call Salih.
 $ td reset
-$ td l
+$ td
 
 ```
 
@@ -83,3 +83,7 @@ alias todo="path/to/td"
 ## Contributing
 
 td made in one night for me. I will improve td but feel free to contribute.
+
+
+
+
