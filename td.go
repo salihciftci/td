@@ -79,14 +79,10 @@ func help() {
 	fmt.Println("")
 	fmt.Println("Usage:")
 	fmt.Println("")
-	fmt.Println("\t td command [arguments]")
-	fmt.Println("")
-	fmt.Println("The Commands are:")
-	fmt.Println("")
-	fmt.Println("\tadd\tadd a new task.")
-	fmt.Println("\tlist\tlist all of your tasks.")
-	fmt.Println("\tdone\tcomplete your task.")
-	fmt.Println("\treset\tcomplete all of your tasks.")
+	fmt.Println("\ttd        \tlist all of your tasks.")
+	fmt.Println("\ttd [desc] \tadd a new task.")
+	fmt.Println("\tdone [arg]\tcomplete your task.")
+	fmt.Println("\treset     \tcomplete all of your tasks.")
 	fmt.Println("")
 }
 
