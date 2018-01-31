@@ -96,25 +96,22 @@ func main() {
 	}
 
 	arg := os.Args[1:]
-	if len(arg) < 1 || arg[0] == "help" || arg[0] == "h" {
-		help()
-	} else if arg[0] == "add" || arg[0] == "a" {
-		if len(arg) < 2 {
-			help()
-		} else {
-			add(arg[1:])
-		}
-	} else if arg[0] == "list" || arg[0] == "l" {
+	if len(arg) < 1 {
 		list()
-	} else if arg[0] == "reset" || arg[0] == "r" {
-		reset()
-	} else if arg[0] == "done" || arg[0] == "d" {
-		if len(arg) < 2 {
-			help()
-		} else {
-			done(arg[1])
-		}
 	} else {
-		help()
+		switch arg[0] {
+		case "done":
+			if len(arg) < 2 {
+				help()
+			} else {
+				done(arg[1])
+			}
+		case "reset":
+			reset()
+		case "help":
+			help()
+		default:
+			add(arg[0:])
+		}
 	}
 }
