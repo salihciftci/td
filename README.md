@@ -61,7 +61,7 @@ $ td
 
 ## Installing td
 
-td is written with Golang but there is no need a Golang installed to use td. You can [download](http://) the lastest version of td or just clone to repository. After that just use it.
+td is written with Golang but there is no need a Golang installed to use td. You can [download](https://github.com/salihciftci/td/releases/download/v0.1.0/td) the lastest version of td or just clone to repository. After that just use it.
 
 To using globally.
 If you are using bash, run:
