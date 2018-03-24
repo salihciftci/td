@@ -31,10 +31,10 @@ $ td
 
 ### Completing a task
 
-You can complete your task with `td done index`.
+You can complete your task with `td -d index`.
 
 ```
-$ td done 2
+$ td -d 2
 $ td
 1: Try to learn Golang.
 2: Call Salih.
@@ -51,37 +51,39 @@ $ td | grep Call
 
 ### Completing all of your tasks.
 
-Even you can complete all of your tasks. Just use `td reset`
+Even you can complete all of your tasks. Just use `td -r`
 ```
 $ td
 1: Try to learn Golang.
 2: Call Salih.
-$ td reset
+$ td -r
 $ td
 
 ```
 
 ## Installing td
 
-td is written with Golang but there is no need a Golang installed to use td. You can [download](https://github.com/salihciftci/td/releases/download/v0.1.0/td) the lastest version of td or just clone to repository. After that just use it.
+First we need a MySQL database. Edit the line [100](https://github.com/salihciftci/td/blob/master/td.go#L100) for your own database.
 
-To using globally.
-If you are using bash, run:
-```
-$ echo alias td="path/to/td" >> ~/.bash_profile
+After that basically we need a table to store all of our tds.
+Here is the MySQL query for creating table;
+```sql
+CREATE TABLE `td` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `tdId` int NOT NULL,
+  `td` text NOT NULL,
+  `owner` varchar(64) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `tdId` (`tdId`)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
 ```
 
-If you are using zsh, run:
-```
-$ echo alias td="path/to/td" >> ~/.zshrc
-```
+And you are done! Build the td and use it!
 
-Don't you like td? Name it what ever you want.
-```
-alias t="path/to/td"
-alias todo="path/to/td"
-```
+**Note:** td has a `owner` variable in line [12](http://https://github.com/salihciftci/td/blob/master/td.go#L12) for multi-user usage.
+
 
 ## Contributing
 
 td made in one night for me. I will improve td but feel free to contribute.
+
