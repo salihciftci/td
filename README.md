@@ -73,8 +73,7 @@ CREATE TABLE `td` (
   `tdId` int NOT NULL,
   `td` text NOT NULL,
   `owner` varchar(64) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `tdId` (`tdId`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
 ```
 
