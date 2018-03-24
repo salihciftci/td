@@ -40,7 +40,7 @@ func list(db *sql.DB) {
 func add(db *sql.DB, args []string) {
 	var tds td
 
-	err := db.QueryRow("SELECT MAX(tdId) FROM td").Scan(&tds.TdId)
+	err := db.QueryRow("SELECT MAX(tdId) FROM td WHERE owner = ?", owner).Scan(&tds.TdId)
 	if err != nil {
 		//No error handling for getting 0(zero) value.
 	}
@@ -65,7 +65,7 @@ func add(db *sql.DB, args []string) {
 }
 
 func done(db *sql.DB, which string) {
-	insert, err := db.Query("Delete from td Where tdId = " + which)
+	insert, err := db.Query("Delete from td Where tdId = " + which + " AND owner = '" + owner + "'")
 
 	if err != nil {
 		log.Println(err.Error())
@@ -75,7 +75,7 @@ func done(db *sql.DB, which string) {
 }
 
 func reset(db *sql.DB) {
-	insert, err := db.Query("Delete FROM td")
+	insert, err := db.Query("Delete FROM td WHERE owner = ?", owner)
 
 	if err != nil {
 		log.Println(err.Error())
