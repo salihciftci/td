@@ -1,77 +1,87 @@
 package main
 
 import (
-	"bufio"
+	"database/sql"
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"os"
 	"strconv"
 )
 
-var tds []string
+var owner = "td"
 
-func add(arg []string) {
-	read()
-	name := ""
-	for i, e := range arg {
+type td struct {
+	Id    int    `json:"id"`
+	TdId  int    `json:"tdId"`
+	Td    string `json:"td"`
+	Owner string `json:"owner"`
+}
+
+func list(db *sql.DB) {
+	results, err := db.Query("Select tdId,td FROM td Where owner = ?", owner)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	for results.Next() {
+		var tds td
+		err = results.Scan(&tds.TdId, &tds.Td)
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		strId := strconv.Itoa(tds.TdId)
+		fmt.Println(strId + ": " + tds.Td)
+	}
+
+}
+
+func add(db *sql.DB, args []string) {
+	var tds td
+
+	err := db.QueryRow("SELECT MAX(tdId) FROM td").Scan(&tds.TdId)
+	if err != nil {
+		//No error handling for getting 0(zero) value.
+	}
+
+	desc := ""
+	for i, e := range args {
 		if i == 0 {
-			name = e
+			desc = e
 		} else {
-			name = name + " " + e
+			desc = desc + " " + e
 		}
 	}
-	tds = append(tds, name)
-	write(tds)
-}
 
-func list() {
-	read()
-	for i, e := range tds {
-		fmt.Printf("%d: %s\n", i+1, e)
-	}
-}
+	strTdId := strconv.Itoa(tds.TdId + 1)
+	insert, err := db.Query("Insert Into td(tdId,td,owner) VALUES (" + strTdId + ",'" + desc + "','" + owner + "')")
 
-func reset() {
-	tds = tds[:0]
-	write(tds)
-}
-
-func write(tds []string) {
-	file, err := os.Create(os.Getenv("HOME") + "/.tddb")
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err.Error())
 	}
-	defer file.Close()
 
-	w := bufio.NewWriter(file)
-	for _, line := range tds {
-		fmt.Fprintln(w, line)
-	}
-	w.Flush()
+	defer insert.Close()
 }
 
-func done(which string) {
-	read()
-	if i, err := strconv.Atoi(which); err == nil {
-		if i-1 < len(tds) {
-			tds = append(tds[:i-1], tds[i:]...)
-		}
-	}
-	write(tds)
-}
+func done(db *sql.DB, which string) {
+	insert, err := db.Query("Delete from td Where tdId = " + which)
 
-func read() {
-	tds = tds[:0]
-	file, err := os.Open(os.Getenv("HOME") + "/.tddb")
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err.Error())
 	}
-	defer file.Close()
 
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		tds = append(tds, scanner.Text())
+	defer insert.Close()
+}
+
+func reset(db *sql.DB) {
+	insert, err := db.Query("Delete FROM td")
+
+	if err != nil {
+		log.Println(err.Error())
 	}
+
+	defer insert.Close()
 }
 
 func help() {
@@ -87,27 +97,31 @@ func help() {
 }
 
 func main() {
-	if _, err := os.Stat(os.Getenv("HOME") + "/.tddb"); os.IsNotExist(err) {
-		write(tds)
+	db, err := sql.Open("mysql", "user:password@tcp(127.0.0.1:3306)/td")
+
+	if err != nil {
+		log.Println(err.Error())
 	}
+
+	defer db.Close()
 
 	arg := os.Args[1:]
 	if len(arg) < 1 {
-		list()
+		list(db)
 	} else {
 		switch arg[0] {
-		case "done":
+		case "-d":
 			if len(arg) < 2 {
 				help()
 			} else {
-				done(arg[1])
+				done(db, arg[1])
 			}
-		case "reset":
-			reset()
-		case "help":
+		case "-r":
+			reset(db)
+		case "-h":
 			help()
 		default:
-			add(arg[0:])
+			add(db, arg[0:])
 		}
 	}
 }
