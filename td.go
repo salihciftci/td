@@ -91,8 +91,8 @@ func help() {
 	fmt.Println("")
 	fmt.Println("\ttd        \tlist all of your tasks.")
 	fmt.Println("\ttd [desc] \tadd a new task.")
-	fmt.Println("\tdone [arg]\tcomplete your task.")
-	fmt.Println("\treset     \tcomplete all of your tasks.")
+	fmt.Println("\t-d [arg]  \tcomplete your task.")
+	fmt.Println("\t-r        \tcomplete all of your tasks.")
 	fmt.Println("")
 }
 
