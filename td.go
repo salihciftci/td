@@ -3,17 +3,18 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"os"
 	"strconv"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 var owner = "td"
 
 type td struct {
-	Id    int    `json:"id"`
-	TdId  int    `json:"tdId"`
+	ID    int    `json:"id"`
+	TdID  int    `json:"tdId"`
 	Td    string `json:"td"`
 	Owner string `json:"owner"`
 }
@@ -26,13 +27,13 @@ func list(db *sql.DB) {
 
 	for results.Next() {
 		var tds td
-		err = results.Scan(&tds.TdId, &tds.Td)
+		err = results.Scan(&tds.TdID, &tds.Td)
 		if err != nil {
 			log.Println(err.Error())
 		}
 
-		strId := strconv.Itoa(tds.TdId)
-		fmt.Println(strId + ": " + tds.Td)
+		strID := strconv.Itoa(tds.TdID)
+		fmt.Println(strID + ": " + tds.Td)
 	}
 
 }
@@ -40,7 +41,7 @@ func list(db *sql.DB) {
 func add(db *sql.DB, args []string) {
 	var tds td
 
-	err := db.QueryRow("SELECT MAX(tdId) FROM td WHERE owner = ?", owner).Scan(&tds.TdId)
+	err := db.QueryRow("SELECT MAX(tdId) FROM td WHERE owner = ?", owner).Scan(&tds.TdID)
 	if err != nil {
 		//No error handling for getting 0(zero) value.
 	}
@@ -54,8 +55,8 @@ func add(db *sql.DB, args []string) {
 		}
 	}
 
-	strTdId := strconv.Itoa(tds.TdId + 1)
-	insert, err := db.Query("Insert Into td(tdId,td,owner) VALUES (" + strTdId + ",'" + desc + "','" + owner + "')")
+	strTdID := strconv.Itoa(tds.TdID + 1)
+	insert, err := db.Query("Insert Into td(tdId,td,owner) VALUES (" + strTdID + ",'" + desc + "','" + owner + "')")
 
 	if err != nil {
 		log.Println(err.Error())
@@ -65,13 +66,19 @@ func add(db *sql.DB, args []string) {
 }
 
 func done(db *sql.DB, which string) {
-	insert, err := db.Query("Delete from td Where tdId = " + which + " AND owner = '" + owner + "'")
-
+	_, err := strconv.Atoi(which)
 	if err != nil {
-		log.Println(err.Error())
+		help()
+	} else {
+		insert, err := db.Query("Delete from td Where tdId = " + which + " AND owner = '" + owner + "'")
+
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		defer insert.Close()
 	}
 
-	defer insert.Close()
 }
 
 func reset(db *sql.DB) {
