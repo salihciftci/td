@@ -65,6 +65,7 @@ func add(db *sql.DB, args []string, owner string) {
 	}
 
 	defer insert.Close()
+	fmt.Println("==> '" + desc + "' added.")
 }
 
 //done completes single td with given argument from database.
@@ -76,12 +77,14 @@ func done(db *sql.DB, which string, owner string) {
 		err := db.QueryRow("Select 1 from td Where owner='" + owner + "' AND tdID = " + which).Scan(&tds.TdID)
 		if err != nil {
 			//Given index doesn't exist
+			fmt.Println("==> td[" + which + "] doesn't exist.")
 		} else {
 			insert, err := db.Query("Delete from td Where tdId = " + which + " AND owner = '" + owner + "'")
 			if err != nil {
 				log.Println(err.Error())
 			}
 			defer insert.Close()
+			fmt.Println("==> td[" + which + "] completed.")
 		}
 	}
 }
@@ -95,6 +98,7 @@ func reset(db *sql.DB, owner string) {
 	}
 
 	defer insert.Close()
+	fmt.Println("==> Completed all of your tds.")
 }
 
 //help stdout usage of td.
