@@ -11,7 +11,6 @@ import (
 )
 
 var (
-	owner   = ""
 	version = "0.1.1"
 )
 
@@ -22,7 +21,8 @@ type td struct {
 	Owner string `json:"owner"`
 }
 
-func list(db *sql.DB) {
+//list listing all to-dos from database.
+func list(db *sql.DB, owner string) {
 	results, err := db.Query("Select tdId,td FROM td Where owner = ?", owner)
 	if err != nil {
 		log.Println(err.Error())
@@ -40,7 +40,8 @@ func list(db *sql.DB) {
 	}
 }
 
-func add(db *sql.DB, args []string) {
+//add new task with given argument to database.
+func add(db *sql.DB, args []string, owner string) {
 	var tds td
 
 	err := db.QueryRow("SELECT MAX(tdId) FROM td WHERE owner = ?", owner).Scan(&tds.TdID)
@@ -67,7 +68,8 @@ func add(db *sql.DB, args []string) {
 	defer insert.Close()
 }
 
-func done(db *sql.DB, which string) {
+//done completes single td with given argument from database.
+func done(db *sql.DB, which string, owner string) {
 	_, err := strconv.Atoi(which)
 	if err != nil {
 		help()
@@ -83,7 +85,8 @@ func done(db *sql.DB, which string) {
 
 }
 
-func reset(db *sql.DB) {
+//reset deletes all tds from database.
+func reset(db *sql.DB, owner string) {
 	insert, err := db.Query("Delete FROM td WHERE owner = ?", owner)
 
 	if err != nil {
@@ -93,6 +96,7 @@ func reset(db *sql.DB) {
 	defer insert.Close()
 }
 
+//help stdout usage of td.
 func help() {
 	fmt.Println("td is a tool for managing tasks.")
 	fmt.Println("")
@@ -109,7 +113,7 @@ func main() {
 	user := os.Getenv("DB_USER")
 	pass := os.Getenv("DB_PASS")
 	ip := os.Getenv("DB_IP")
-	owner = os.Getenv("OWNER")
+	owner := os.Getenv("OWNER")
 
 	db, err := sql.Open("mysql", user+":"+pass+"@tcp("+ip+")/lora")
 
@@ -121,21 +125,21 @@ func main() {
 
 	arg := os.Args[1:]
 	if len(arg) < 1 {
-		list(db)
+		list(db, owner)
 	} else {
 		switch arg[0] {
 		case "-d":
 			if len(arg) < 2 {
 				help()
 			} else {
-				done(db, arg[1])
+				done(db, arg[1], owner)
 			}
 		case "-r":
-			reset(db)
+			reset(db, owner)
 		case "-h":
 			help()
 		default:
-			add(db, arg[0:])
+			add(db, arg[0:], owner)
 		}
 	}
 }
