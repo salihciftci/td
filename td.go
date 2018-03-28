@@ -10,11 +10,11 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-var owner = "td"
+var owner = ""
 
 type td struct {
 	ID    int    `json:"id"`
-	TdID  int    `json:"tdId"`
+	TdID  int    `json:"tdID"`
 	Td    string `json:"td"`
 	Owner string `json:"owner"`
 }
@@ -35,7 +35,6 @@ func list(db *sql.DB) {
 		strID := strconv.Itoa(tds.TdID)
 		fmt.Println(strID + ": " + tds.Td)
 	}
-
 }
 
 func add(db *sql.DB, args []string) {
@@ -104,7 +103,12 @@ func help() {
 }
 
 func main() {
-	db, err := sql.Open("mysql", "user:password@tcp(127.0.0.1:3306)/td")
+	user := os.Getenv("DB_USER")
+	pass := os.Getenv("DB_PASS")
+	ip := os.Getenv("DB_IP")
+	owner = os.Getenv("OWNER")
+
+	db, err := sql.Open("mysql", user+":"+pass+"@tcp("+ip+")/lora")
 
 	if err != nil {
 		log.Println(err.Error())
