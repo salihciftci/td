@@ -120,6 +120,7 @@ func main() {
 	ip := os.Getenv("DB_IP")
 	owner := os.Getenv("OWNER")
 
+	//Connecting to MySQL
 	db, err := sql.Open("mysql", user+":"+pass+"@tcp("+ip+")/td")
 
 	if err != nil {
@@ -128,11 +129,13 @@ func main() {
 
 	defer db.Close()
 
-	err = db.QueryRow("SELECT 1 FROM tds LIMIT 1").Scan(&tds.ID)
+	//Checking td table exist or not
+	err = db.QueryRow("SELECT 1 FROM td LIMIT 1").Scan(&tds.ID)
 	if err != nil {
 		log.Println(err.Error())
 	}
 
+	//Parsing Args
 	arg := os.Args[1:]
 	if len(arg) < 1 {
 		list(db, owner)
