@@ -12,6 +12,7 @@ import (
 
 var (
 	version = "0.1.1"
+	tds     td
 )
 
 type td struct {
@@ -29,7 +30,6 @@ func list(db *sql.DB, owner string) {
 	}
 
 	for results.Next() {
-		var tds td
 		err = results.Scan(&tds.TdID, &tds.Td)
 		if err != nil {
 			log.Println(err.Error())
@@ -42,7 +42,6 @@ func list(db *sql.DB, owner string) {
 
 //add new task with given argument to database.
 func add(db *sql.DB, args []string, owner string) {
-	var tds td
 
 	err := db.QueryRow("SELECT MAX(tdId) FROM td WHERE owner = ?", owner).Scan(&tds.TdID)
 	if err != nil {
@@ -74,15 +73,17 @@ func done(db *sql.DB, which string, owner string) {
 	if err != nil {
 		help()
 	} else {
-		insert, err := db.Query("Delete from td Where tdId = " + which + " AND owner = '" + owner + "'")
-
+		err := db.QueryRow("Select 1 from td Where owner='" + owner + "' AND tdID = " + which).Scan(&tds.TdID)
 		if err != nil {
-			log.Println(err.Error())
+			//Given index doesn't exist
+		} else {
+			insert, err := db.Query("Delete from td Where tdId = " + which + " AND owner = '" + owner + "'")
+			if err != nil {
+				log.Println(err.Error())
+			}
+			defer insert.Close()
 		}
-
-		defer insert.Close()
 	}
-
 }
 
 //reset deletes all tds from database.
