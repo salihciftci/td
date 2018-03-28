@@ -10,7 +10,10 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-var owner = ""
+var (
+	owner   = ""
+	version = "0.1.1"
+)
 
 type td struct {
 	ID    int    `json:"id"`
