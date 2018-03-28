@@ -120,13 +120,18 @@ func main() {
 	ip := os.Getenv("DB_IP")
 	owner := os.Getenv("OWNER")
 
-	db, err := sql.Open("mysql", user+":"+pass+"@tcp("+ip+")/lora")
+	db, err := sql.Open("mysql", user+":"+pass+"@tcp("+ip+")/td")
 
 	if err != nil {
 		log.Println(err.Error())
 	}
 
 	defer db.Close()
+
+	err = db.QueryRow("SELECT 1 FROM tds LIMIT 1").Scan(&tds.ID)
+	if err != nil {
+		log.Println(err.Error())
+	}
 
 	arg := os.Args[1:]
 	if len(arg) < 1 {
