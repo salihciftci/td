@@ -7,6 +7,7 @@ import (
 	"os"
 	"strconv"
 
+	clip "github.com/atotto/clipboard"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -101,6 +102,26 @@ func reset(db *sql.DB, owner string) {
 	fmt.Println("==> Completed all of your tds.")
 }
 
+func clipboard(db *sql.DB, which string, owner string) {
+	_, err := strconv.Atoi(which)
+	if err != nil {
+		help()
+	} else {
+		err := db.QueryRow("Select 1 FROM td Where owner='" + owner + "' AND tdID = " + which).Scan(&tds.TdID)
+		if err != nil {
+			fmt.Println("==> td[" + which + "] doesn't exist.")
+		} else {
+			err := db.QueryRow("Select td FROM td Where owner='" + owner + "' AND tdID = " + which).Scan(&tds.Td)
+			if err != nil {
+				log.Println(err.Error())
+			}
+			clip.WriteAll(tds.Td)
+			fmt.Println("==> td[" + which + "] has been copied to clipboard.")
+		}
+	}
+
+}
+
 //help stdout usage of td.
 func help() {
 	fmt.Println("td is a tool for managing tasks.")
@@ -109,7 +130,8 @@ func help() {
 	fmt.Println("")
 	fmt.Println("\ttd        \tlist all of your tasks.")
 	fmt.Println("\ttd [desc] \tadd a new task.")
-	fmt.Println("\t-d [arg]  \tcomplete your task.")
+	fmt.Println("\t-d [index]  \tcomplete your task.")
+	fmt.Println("\t-c [index]  \tcopy to clipboard.")
 	fmt.Println("\t-r        \tcomplete all of your tasks.")
 	fmt.Println("")
 }
@@ -146,6 +168,12 @@ func main() {
 				help()
 			} else {
 				done(db, arg[1], owner)
+			}
+		case "-c":
+			if len(arg) < 2 {
+				help()
+			} else {
+				clipboard(db, arg[1], owner)
 			}
 		case "-r":
 			reset(db, owner)
