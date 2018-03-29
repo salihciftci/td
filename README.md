@@ -49,7 +49,18 @@ $ td | grep Call
 2: Call Salih.
 ```
 
-### Completing all of your tasks.
+### Copy your task to clipboard
+
+You can copy any of your task to clipboard with `td -c [index]`
+```
+$ td
+1: Try to learn Golang.
+2: Call Salih
+$ td -c 1
+$ ==> td[1] has been copied to clipboard.
+```
+
+### Completing all of your tasks
 
 Even you can complete all of your tasks. Just use `td -r`
 ```
@@ -63,7 +74,7 @@ $ td
 
 ## Installing td
 
-First we need a MySQL database. Edit the line [100](https://github.com/salihciftci/td/blob/master/td.go#L100) for your own database.
+First we need a MySQL database. Edit the line [140](https://github.com/salihciftci/td/blob/master/td.go#L100) to 142 for your own database.
 
 After that basically we need a table to store all of our tds.
 Here is the MySQL query for creating table;
@@ -79,7 +90,7 @@ CREATE TABLE `td` (
 
 And you are done! Build the td and use it!
 
-**Note:** td has a `owner` variable in line [12](http://https://github.com/salihciftci/td/blob/master/td.go#L12) for multi-user usage.
+**Note:** td has a `owner` variable in line [143](http://https://github.com/salihciftci/td/blob/master/td.go#L12) for multi-user usage.
 
 
 ## Contributing
