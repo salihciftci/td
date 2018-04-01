@@ -145,13 +145,15 @@ func help() {
 }
 
 func main() {
-	user := os.Getenv("DB_USER")
-	pass := os.Getenv("DB_PASS")
-	ip := os.Getenv("DB_IP")
+	user := os.Getenv("MYSQL_USER")
+	pass := os.Getenv("MYSQL_PASS")
+	ip := os.Getenv("MYSQL_IP")
+	dbName := os.Getenv("MYSQL_DB")
 	owner := os.Getenv("OWNER")
 
 	//Connecting to MySQL
-	db, err := sql.Open("mysql", user+":"+pass+"@tcp("+ip+")/td")
+	connection := user + ":" + pass + "@tcp(" + ip + ")/" + dbName
+	db, err := sql.Open("mysql", connection)
 
 	if err != nil {
 		log.Println(err.Error())
