@@ -74,20 +74,24 @@ func done(db *sql.DB, which string, owner string) {
 	_, err := strconv.Atoi(which)
 	if err != nil {
 		help()
-	} else {
-		err := db.QueryRow("Select 1 from td Where owner='" + owner + "' AND tdID = " + which).Scan(&tds.TdID)
-		if err != nil {
-			//Given index doesn't exist
-			fmt.Println("==> td[" + which + "] doesn't exist.")
-		} else {
-			insert, err := db.Query("Delete from td Where tdId = " + which + " AND owner = '" + owner + "'")
-			if err != nil {
-				log.Println(err.Error())
-			}
-			defer insert.Close()
-			fmt.Println("==> td[" + which + "] completed.")
-		}
+		return
 	}
+
+	err = db.QueryRow("Select 1 from td Where owner='" + owner + "' AND tdID = " + which).Scan(&tds.TdID)
+	if err != nil {
+		//Given index doesn't exist
+		fmt.Println("==> td[" + which + "] doesn't exist.")
+		return
+	}
+
+	insert, err := db.Query("Delete from td Where tdId = " + which + " AND owner = '" + owner + "'")
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	defer insert.Close()
+	fmt.Println("==> td[" + which + "] completed.")
+
 }
 
 //reset deletes all tds from database.
@@ -102,23 +106,27 @@ func reset(db *sql.DB, owner string) {
 	fmt.Println("==> Completed all of your tds.")
 }
 
+//clipboard copy td to clipboard
 func clipboard(db *sql.DB, which string, owner string) {
 	_, err := strconv.Atoi(which)
 	if err != nil {
 		help()
-	} else {
-		err := db.QueryRow("Select 1 FROM td Where owner='" + owner + "' AND tdID = " + which).Scan(&tds.TdID)
-		if err != nil {
-			fmt.Println("==> td[" + which + "] doesn't exist.")
-		} else {
-			err := db.QueryRow("Select td FROM td Where owner='" + owner + "' AND tdID = " + which).Scan(&tds.Td)
-			if err != nil {
-				log.Println(err.Error())
-			}
-			clip.WriteAll(tds.Td)
-			fmt.Println("==> td[" + which + "] has been copied to clipboard.")
-		}
+		return
 	}
+
+	err = db.QueryRow("Select 1 FROM td Where owner='" + owner + "' AND tdID = " + which).Scan(&tds.TdID)
+	if err != nil {
+		fmt.Println("==> td[" + which + "] doesn't exist.")
+		return
+	}
+
+	err = db.QueryRow("Select td FROM td Where owner='" + owner + "' AND tdID = " + which).Scan(&tds.Td)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	clip.WriteAll(tds.Td)
+	fmt.Println("==> td[" + which + "] has been copied to clipboard.")
 
 }
 
